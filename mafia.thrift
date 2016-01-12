@@ -1,9 +1,11 @@
 namespace rb RocHack.Mafia
 
 service MafiaServer {
+  void ping();
+
   // add player to game
   bool join_game(1:string name, 2:string host, 3:i32 port);
-  
+
   // take action on a target
   bool take_action(1:i32 action, 2:string target);
 
@@ -18,10 +20,12 @@ service MafiaServer {
 }
 
 service MafiaPlayer {
-  
+
+  void ping();
+
   // informs player the game has begun
   void start_game(1:list<string> player_names, 2:set<string> modifiers)
-  
+
   // informs player they have died
   void kill(1:string message);
 

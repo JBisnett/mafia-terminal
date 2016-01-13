@@ -37,24 +37,33 @@ import           Data.Int
 import           System.Random
 
 data Player = Player {
-number :: I.Int,
+number :: I.Int32,
 name   :: P.String,
 handle :: (BinaryProtocol Handle, BinaryProtocol Handle),
 alive  :: P.Bool,
 role   :: P.String
 }
 
+type MutablePlayerMap = MVar (Map.HashMap Int Player)
+
 data ServerHandler = ServerHandler {
-players :: MVar (Map.HashMap Int Player)
+players :: MutablePlayerMap
 }
 
-getPlayers ServerHandler {players = p} = p
+getPlayers ServerHandler {players = p} = p :: MutablePlayerMap
+
+addToMap :: MutablePlayerMap -> Int -> Player -> P.IO()
+addToMap mvarMap number player = do
+  m <- takeMVar mvarMap
+  let newMap = Map.insert number player m
+  putMVar mvarMap newMap
+  return ()
 
 newSH = do
   m <- newMVar Map.empty
   return $ ServerHandler m
 
-newPlayer :: I.Int -> P.String -> (BinaryProtocol Handle, BinaryProtocol Handle) -> Player
+newPlayer :: I.Int32 -> P.String -> (BinaryProtocol Handle, BinaryProtocol Handle) -> Player
 newPlayer num n p = Player {number = num, name = n, handle = p, alive = P.True, role = "unassigned"}
 
 
@@ -70,15 +79,16 @@ instance MafiaServer_Iface ServerHandler where
     let name = LT.unpack n
 
     number <- getStdRandom (randomR (0, 2 P.^32))
-    let player = newPlayer number name handle
-
-    let players = getPlayers
+    let num32 = P.fromIntegral number :: I.Int32
+    let player = newPlayer num32 name handle
+    let players = getPlayers s
+    addToMap players number player
 
 
     P.putStr name
     P.putStrLn " joined the game"
 
-    let num32 = P.fromIntegral number :: I.Int32
+
     return num32
 
   take_action _ _ _ = do

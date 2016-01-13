@@ -18,7 +18,7 @@ executable mafia-terminal-server
   hs-source-dirs:    Generated, src
   main-is:           Server.hs
   -- other-modules:
-  build-depends:     base ==4.6.*, bytestring ==0.10.*, hashable ==1.2.*, unordered-containers ==0.2.*, text ==1.2.*, vector ==0.11.*, QuickCheck ==2.8.*, thrift ==0.9.*, network, random
+  build-depends:     base ==4.6.*, bytestring ==0.10.*, hashable ==1.2.*, unordered-containers ==0.2.*, text ==1.2.*, vector ==0.11.*, QuickCheck ==2.8.*, thrift ==0.9.*, network, random, monads-tf
 
 executable mafia-terminal-player
   hs-source-dirs:    Generated, src

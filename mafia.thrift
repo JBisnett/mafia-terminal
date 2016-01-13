@@ -3,8 +3,8 @@ namespace rb RocHack.Mafia
 service MafiaServer {
   void ping();
 
-  // add player to game
-  bool join_game(1:string name, 2:string host, 3:i32 port);
+  // add player to game, return player ID
+  i32 join_game(1:string name, 2:string host, 3:i32 port);
 
   // take action on a target
   bool take_action(1:i32 action, 2:string target);

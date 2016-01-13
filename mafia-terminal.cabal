@@ -15,11 +15,13 @@ build-type:          Simple
 cabal-version:       >=1.8
 
 executable mafia-terminal-server
-  main-is: Server.hs
+  hs-source-dirs:    Generated, src
+  main-is:           Server.hs
   -- other-modules:
-  build-depends:       base ==4.6.*, bytestring ==0.10.*, hashable ==1.2.*, unordered-containers ==0.2.*, text ==1.2.*, vector ==0.11.*, QuickCheck ==2.8.*, thrift ==0.9.*, network
+  build-depends:     base ==4.6.*, bytestring ==0.10.*, hashable ==1.2.*, unordered-containers ==0.2.*, text ==1.2.*, vector ==0.11.*, QuickCheck ==2.8.*, thrift ==0.9.*, network, random
 
 executable mafia-terminal-player
-  main-is: Player.hs
+  hs-source-dirs:    Generated, src
+  main-is:           Player.hs
 
-  build-depends:       base ==4.6.*, bytestring ==0.10.*, hashable ==1.2.*, unordered-containers ==0.2.*, text ==1.2.*, vector ==0.11.*, QuickCheck ==2.8.*, thrift ==0.9.*, network
+  build-depends:     base ==4.6.*, bytestring ==0.10.*, hashable ==1.2.*, unordered-containers ==0.2.*, text ==1.2.*, vector ==0.11.*, QuickCheck ==2.8.*, thrift ==0.9.*, network

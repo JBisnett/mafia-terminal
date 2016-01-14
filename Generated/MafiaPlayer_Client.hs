@@ -58,14 +58,14 @@ recv_ping ip = do
   res <- read_Ping_result ip
   T.readMessageEnd ip
   P.return ()
-start_game (ip,op) arg_player_names arg_modifiers = do
-  send_start_game op arg_player_names arg_modifiers
+start_game (ip,op) arg_player_names = do
+  send_start_game op arg_player_names
   recv_start_game ip
-send_start_game op arg_player_names arg_modifiers = do
+send_start_game op arg_player_names = do
   seq <- seqid
   seqn <- R.readIORef seq
   T.writeMessageBegin op ("start_game", T.M_CALL, seqn)
-  write_Start_game_args op (Start_game_args{start_game_args_player_names=arg_player_names,start_game_args_modifiers=arg_modifiers})
+  write_Start_game_args op (Start_game_args{start_game_args_player_names=arg_player_names})
   T.writeMessageEnd op
   T.tFlush (T.getTransport op)
 recv_start_game ip = do

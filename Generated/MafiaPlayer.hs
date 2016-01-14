@@ -95,22 +95,18 @@ default_Ping_result :: Ping_result
 default_Ping_result = Ping_result{
 }
 data Start_game_args = Start_game_args  { start_game_args_player_names :: (Vector.Vector LT.Text)
-  , start_game_args_modifiers :: (Set.HashSet LT.Text)
   } deriving (P.Show,P.Eq,G.Generic,TY.Typeable)
 instance H.Hashable Start_game_args where
-  hashWithSalt salt record = salt   `H.hashWithSalt` start_game_args_player_names record   `H.hashWithSalt` start_game_args_modifiers record  
+  hashWithSalt salt record = salt   `H.hashWithSalt` start_game_args_player_names record  
 instance QC.Arbitrary Start_game_args where 
   arbitrary = M.liftM Start_game_args (QC.arbitrary)
-          `M.ap`(QC.arbitrary)
   shrink obj | obj == default_Start_game_args = []
              | P.otherwise = M.catMaybes
     [ if obj == default_Start_game_args{start_game_args_player_names = start_game_args_player_names obj} then P.Nothing else P.Just $ default_Start_game_args{start_game_args_player_names = start_game_args_player_names obj}
-    , if obj == default_Start_game_args{start_game_args_modifiers = start_game_args_modifiers obj} then P.Nothing else P.Just $ default_Start_game_args{start_game_args_modifiers = start_game_args_modifiers obj}
     ]
 from_Start_game_args :: Start_game_args -> T.ThriftVal
 from_Start_game_args record = T.TStruct $ Map.fromList $ M.catMaybes
   [ (\_v86 -> P.Just (1, ("player_names",T.TList T.T_STRING $ P.map (\_v88 -> T.TString $ E.encodeUtf8 _v88) $ Vector.toList _v86))) $ start_game_args_player_names record
-  , (\_v86 -> P.Just (2, ("modifiers",T.TSet T.T_STRING $ P.map (\_v90 -> T.TString $ E.encodeUtf8 _v90) $ Set.toList _v86))) $ start_game_args_modifiers record
   ]
 write_Start_game_args :: (T.Protocol p, T.Transport t) => p t -> Start_game_args -> P.IO ()
 write_Start_game_args oprot record = T.writeVal oprot $ from_Start_game_args record
@@ -118,8 +114,7 @@ encode_Start_game_args :: (T.Protocol p, T.Transport t) => p t -> Start_game_arg
 encode_Start_game_args oprot record = T.serializeVal oprot $ from_Start_game_args record
 to_Start_game_args :: T.ThriftVal -> Start_game_args
 to_Start_game_args (T.TStruct fields) = Start_game_args{
-  start_game_args_player_names = P.maybe (start_game_args_player_names default_Start_game_args) (\(_,_val92) -> (case _val92 of {T.TList _ _val93 -> (Vector.fromList $ P.map (\_v94 -> (case _v94 of {T.TString _val95 -> E.decodeUtf8 _val95; _ -> P.error "wrong type"})) _val93); _ -> P.error "wrong type"})) (Map.lookup (1) fields),
-  start_game_args_modifiers = P.maybe (start_game_args_modifiers default_Start_game_args) (\(_,_val92) -> (case _val92 of {T.TSet _ _val96 -> (Set.fromList $ P.map (\_v97 -> (case _v97 of {T.TString _val98 -> E.decodeUtf8 _val98; _ -> P.error "wrong type"})) _val96); _ -> P.error "wrong type"})) (Map.lookup (2) fields)
+  start_game_args_player_names = P.maybe (start_game_args_player_names default_Start_game_args) (\(_,_val90) -> (case _val90 of {T.TList _ _val91 -> (Vector.fromList $ P.map (\_v92 -> (case _v92 of {T.TString _val93 -> E.decodeUtf8 _val93; _ -> P.error "wrong type"})) _val91); _ -> P.error "wrong type"})) (Map.lookup (1) fields)
   }
 to_Start_game_args _ = P.error "not a struct"
 read_Start_game_args :: (T.Transport t, T.Protocol p) => p t -> P.IO Start_game_args
@@ -127,11 +122,10 @@ read_Start_game_args iprot = to_Start_game_args <$> T.readVal iprot (T.T_STRUCT 
 decode_Start_game_args :: (T.Protocol p, T.Transport t) => p t -> LBS.ByteString -> Start_game_args
 decode_Start_game_args iprot bs = to_Start_game_args $ T.deserializeVal iprot (T.T_STRUCT typemap_Start_game_args) bs
 typemap_Start_game_args :: T.TypeMap
-typemap_Start_game_args = Map.fromList [(1,("player_names",(T.T_LIST T.T_STRING))),(2,("modifiers",(T.T_SET T.T_STRING)))]
+typemap_Start_game_args = Map.fromList [(1,("player_names",(T.T_LIST T.T_STRING)))]
 default_Start_game_args :: Start_game_args
 default_Start_game_args = Start_game_args{
-  start_game_args_player_names = Vector.empty,
-  start_game_args_modifiers = Set.empty}
+  start_game_args_player_names = Vector.empty}
 data Start_game_result = Start_game_result deriving (P.Show,P.Eq,G.Generic,TY.Typeable)
 instance H.Hashable Start_game_result where
   hashWithSalt salt record = salt  
@@ -170,7 +164,7 @@ instance QC.Arbitrary Kill_args where
     ]
 from_Kill_args :: Kill_args -> T.ThriftVal
 from_Kill_args record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v106 -> P.Just (1, ("message",T.TString $ E.encodeUtf8 _v106))) $ kill_args_message record
+  [ (\_v101 -> P.Just (1, ("message",T.TString $ E.encodeUtf8 _v101))) $ kill_args_message record
   ]
 write_Kill_args :: (T.Protocol p, T.Transport t) => p t -> Kill_args -> P.IO ()
 write_Kill_args oprot record = T.writeVal oprot $ from_Kill_args record
@@ -178,7 +172,7 @@ encode_Kill_args :: (T.Protocol p, T.Transport t) => p t -> Kill_args -> LBS.Byt
 encode_Kill_args oprot record = T.serializeVal oprot $ from_Kill_args record
 to_Kill_args :: T.ThriftVal -> Kill_args
 to_Kill_args (T.TStruct fields) = Kill_args{
-  kill_args_message = P.maybe (kill_args_message default_Kill_args) (\(_,_val108) -> (case _val108 of {T.TString _val109 -> E.decodeUtf8 _val109; _ -> P.error "wrong type"})) (Map.lookup (1) fields)
+  kill_args_message = P.maybe (kill_args_message default_Kill_args) (\(_,_val103) -> (case _val103 of {T.TString _val104 -> E.decodeUtf8 _val104; _ -> P.error "wrong type"})) (Map.lookup (1) fields)
   }
 to_Kill_args _ = P.error "not a struct"
 read_Kill_args :: (T.Transport t, T.Protocol p) => p t -> P.IO Kill_args
@@ -280,7 +274,7 @@ instance QC.Arbitrary Server_message_args where
     ]
 from_Server_message_args :: Server_message_args -> T.ThriftVal
 from_Server_message_args record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v127 -> P.Just (1, ("message",T.TString $ E.encodeUtf8 _v127))) $ server_message_args_message record
+  [ (\_v122 -> P.Just (1, ("message",T.TString $ E.encodeUtf8 _v122))) $ server_message_args_message record
   ]
 write_Server_message_args :: (T.Protocol p, T.Transport t) => p t -> Server_message_args -> P.IO ()
 write_Server_message_args oprot record = T.writeVal oprot $ from_Server_message_args record
@@ -288,7 +282,7 @@ encode_Server_message_args :: (T.Protocol p, T.Transport t) => p t -> Server_mes
 encode_Server_message_args oprot record = T.serializeVal oprot $ from_Server_message_args record
 to_Server_message_args :: T.ThriftVal -> Server_message_args
 to_Server_message_args (T.TStruct fields) = Server_message_args{
-  server_message_args_message = P.maybe (server_message_args_message default_Server_message_args) (\(_,_val129) -> (case _val129 of {T.TString _val130 -> E.decodeUtf8 _val130; _ -> P.error "wrong type"})) (Map.lookup (1) fields)
+  server_message_args_message = P.maybe (server_message_args_message default_Server_message_args) (\(_,_val124) -> (case _val124 of {T.TString _val125 -> E.decodeUtf8 _val125; _ -> P.error "wrong type"})) (Map.lookup (1) fields)
   }
 to_Server_message_args _ = P.error "not a struct"
 read_Server_message_args :: (T.Transport t, T.Protocol p) => p t -> P.IO Server_message_args
@@ -338,7 +332,7 @@ instance QC.Arbitrary Set_role_args where
     ]
 from_Set_role_args :: Set_role_args -> T.ThriftVal
 from_Set_role_args record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v138 -> P.Just (1, ("role",T.TString $ E.encodeUtf8 _v138))) $ set_role_args_role record
+  [ (\_v133 -> P.Just (1, ("role",T.TString $ E.encodeUtf8 _v133))) $ set_role_args_role record
   ]
 write_Set_role_args :: (T.Protocol p, T.Transport t) => p t -> Set_role_args -> P.IO ()
 write_Set_role_args oprot record = T.writeVal oprot $ from_Set_role_args record
@@ -346,7 +340,7 @@ encode_Set_role_args :: (T.Protocol p, T.Transport t) => p t -> Set_role_args ->
 encode_Set_role_args oprot record = T.serializeVal oprot $ from_Set_role_args record
 to_Set_role_args :: T.ThriftVal -> Set_role_args
 to_Set_role_args (T.TStruct fields) = Set_role_args{
-  set_role_args_role = P.maybe (set_role_args_role default_Set_role_args) (\(_,_val140) -> (case _val140 of {T.TString _val141 -> E.decodeUtf8 _val141; _ -> P.error "wrong type"})) (Map.lookup (1) fields)
+  set_role_args_role = P.maybe (set_role_args_role default_Set_role_args) (\(_,_val135) -> (case _val135 of {T.TString _val136 -> E.decodeUtf8 _val136; _ -> P.error "wrong type"})) (Map.lookup (1) fields)
   }
 to_Set_role_args _ = P.error "not a struct"
 read_Set_role_args :: (T.Transport t, T.Protocol p) => p t -> P.IO Set_role_args
@@ -403,7 +397,7 @@ process_start_game (seqid, iprot, oprot, handler) = do
   args <- read_Start_game_args iprot
   (X.catch
     (do
-      Iface.start_game handler (start_game_args_player_names args) (start_game_args_modifiers args)
+      Iface.start_game handler (start_game_args_player_names args)
       let res = default_Start_game_result
       T.writeMessageBegin oprot ("start_game", T.M_REPLY, seqid)
       write_Start_game_result oprot res

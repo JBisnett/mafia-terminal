@@ -7,9 +7,11 @@ import qualified Data.Hashable             as H
 import qualified Data.HashMap.Strict       as Map
 import qualified Data.HashSet              as Set
 import qualified Data.Int                  as I
+import qualified Data.List                 as L
 import qualified Data.Maybe                as M (catMaybes)
 import qualified Data.Text.Lazy            as LT
 import qualified Data.Text.Lazy.Encoding   as E (decodeUtf8, encodeUtf8)
+import qualified Data.Traversable          as T
 import qualified Data.Typeable             as TY (Typeable)
 import qualified Data.Vector               as Vector
 import qualified GHC.Generics              as G (Generic)
@@ -28,10 +30,10 @@ import           Thrift.Transport.Handle
 
 import           Mafia_Consts
 import qualified MafiaPlayer               as MP
-import           MafiaPlayer_Client
+import           MafiaPlayer_Client        as MPC
 import           MafiaPlayer_Iface
 import qualified MafiaServer               as MS
-import           MafiaServer_Client
+import           MafiaServer_Client        as MSC
 import           MafiaServer_Iface
 
 import           Data.Int
@@ -51,7 +53,8 @@ instance P.Show Player where
 type MutablePlayerMap = MVar (Map.HashMap Int Player)
 
 data ServerHandler = ServerHandler {
-players :: MutablePlayerMap
+players       :: MutablePlayerMap,
+pingsReceived :: MVar Int
 }
 
 getPlayers ServerHandler {players = p} = p :: MutablePlayerMap
@@ -65,15 +68,35 @@ addToMap mvarMap number player = do
 
 newSH = do
   m <- newMVar Map.empty
-  return $ ServerHandler m
+  n <- newMVar 0
+  return $ ServerHandler m n
 
 newPlayer :: I.Int32 -> P.String -> (BinaryProtocol Handle, BinaryProtocol Handle) -> Player
 newPlayer num n p = Player {number = num, name = n, handle = p, alive = P.True, role = "unassigned"}
 
+createGame :: [Player] -> P.IO()
+createGame player_list = do
+  let namesList = L.map getName player_list
+  player <- P.sequence player_list
+  informPlayer (Vector.fromList namesList) player
+  return ()
+  where
+    getName (Player _ name _ _ _)= LT.pack name
+    informPlayer player_names (Player number name handle alive role) = do
+          MPC.set_role handle (LT.pack "filler")
+          MPC.start_game handle player_names
+
+
 
 
 instance MafiaServer_Iface ServerHandler where
-  ping _ = P.print "Ping"
+  ping state = do
+    let ServerHandler m_players m_pings = state
+    players <- takeMVar m_players
+    pings <- takeMVar m_pings
+    let size = Map.size players
+    createGame (Map.elems players)
+
 
   join_game s n h= do
     let host = LT.unpack h
@@ -107,8 +130,6 @@ instance MafiaServer_Iface ServerHandler where
   private_message _ _ message = do
     P.print message
     return P.True
-
-start_game =
 
 main = do
   handler <- newSH

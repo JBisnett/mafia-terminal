@@ -42,7 +42,7 @@ import Mafia_Types
 
 class MafiaPlayer_Iface a where
   ping :: a -> P.IO ()
-  start_game :: a -> (Vector.Vector LT.Text) -> (Set.HashSet LT.Text) -> P.IO ()
+  start_game :: a -> (Vector.Vector LT.Text) -> P.IO ()
   kill :: a -> LT.Text -> P.IO ()
   time_forward :: a -> P.IO ()
   server_message :: a -> LT.Text -> P.IO ()

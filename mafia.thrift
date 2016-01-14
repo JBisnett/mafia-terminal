@@ -26,7 +26,7 @@ service MafiaPlayer {
   void ping();
 
   // informs player the game has begun
-  void start_game(1:list<string> player_names, 2:set<string> modifiers)
+  void start_game(1:list<string> player_names)
 
   // informs player they have died
   void kill(1:string message);

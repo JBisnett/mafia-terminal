@@ -39,3 +39,6 @@ import qualified Thrift.Arbitraries as T
 
 
 import Mafia_Types
+port_number :: I.Int32
+port_number = 9090
+

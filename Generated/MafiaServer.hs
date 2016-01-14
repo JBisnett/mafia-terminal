@@ -96,25 +96,21 @@ default_Ping_result = Ping_result{
 }
 data Join_game_args = Join_game_args  { join_game_args_name :: LT.Text
   , join_game_args_host :: LT.Text
-  , join_game_args_port :: I.Int32
   } deriving (P.Show,P.Eq,G.Generic,TY.Typeable)
 instance H.Hashable Join_game_args where
-  hashWithSalt salt record = salt   `H.hashWithSalt` join_game_args_name record   `H.hashWithSalt` join_game_args_host record   `H.hashWithSalt` join_game_args_port record  
+  hashWithSalt salt record = salt   `H.hashWithSalt` join_game_args_name record   `H.hashWithSalt` join_game_args_host record  
 instance QC.Arbitrary Join_game_args where 
   arbitrary = M.liftM Join_game_args (QC.arbitrary)
-          `M.ap`(QC.arbitrary)
           `M.ap`(QC.arbitrary)
   shrink obj | obj == default_Join_game_args = []
              | P.otherwise = M.catMaybes
     [ if obj == default_Join_game_args{join_game_args_name = join_game_args_name obj} then P.Nothing else P.Just $ default_Join_game_args{join_game_args_name = join_game_args_name obj}
     , if obj == default_Join_game_args{join_game_args_host = join_game_args_host obj} then P.Nothing else P.Just $ default_Join_game_args{join_game_args_host = join_game_args_host obj}
-    , if obj == default_Join_game_args{join_game_args_port = join_game_args_port obj} then P.Nothing else P.Just $ default_Join_game_args{join_game_args_port = join_game_args_port obj}
     ]
 from_Join_game_args :: Join_game_args -> T.ThriftVal
 from_Join_game_args record = T.TStruct $ Map.fromList $ M.catMaybes
   [ (\_v12 -> P.Just (1, ("name",T.TString $ E.encodeUtf8 _v12))) $ join_game_args_name record
   , (\_v12 -> P.Just (2, ("host",T.TString $ E.encodeUtf8 _v12))) $ join_game_args_host record
-  , (\_v12 -> P.Just (3, ("port",T.TI32 _v12))) $ join_game_args_port record
   ]
 write_Join_game_args :: (T.Protocol p, T.Transport t) => p t -> Join_game_args -> P.IO ()
 write_Join_game_args oprot record = T.writeVal oprot $ from_Join_game_args record
@@ -123,8 +119,7 @@ encode_Join_game_args oprot record = T.serializeVal oprot $ from_Join_game_args 
 to_Join_game_args :: T.ThriftVal -> Join_game_args
 to_Join_game_args (T.TStruct fields) = Join_game_args{
   join_game_args_name = P.maybe (join_game_args_name default_Join_game_args) (\(_,_val14) -> (case _val14 of {T.TString _val15 -> E.decodeUtf8 _val15; _ -> P.error "wrong type"})) (Map.lookup (1) fields),
-  join_game_args_host = P.maybe (join_game_args_host default_Join_game_args) (\(_,_val14) -> (case _val14 of {T.TString _val16 -> E.decodeUtf8 _val16; _ -> P.error "wrong type"})) (Map.lookup (2) fields),
-  join_game_args_port = P.maybe (join_game_args_port default_Join_game_args) (\(_,_val14) -> (case _val14 of {T.TI32 _val17 -> _val17; _ -> P.error "wrong type"})) (Map.lookup (3) fields)
+  join_game_args_host = P.maybe (join_game_args_host default_Join_game_args) (\(_,_val14) -> (case _val14 of {T.TString _val16 -> E.decodeUtf8 _val16; _ -> P.error "wrong type"})) (Map.lookup (2) fields)
   }
 to_Join_game_args _ = P.error "not a struct"
 read_Join_game_args :: (T.Transport t, T.Protocol p) => p t -> P.IO Join_game_args
@@ -132,12 +127,11 @@ read_Join_game_args iprot = to_Join_game_args <$> T.readVal iprot (T.T_STRUCT ty
 decode_Join_game_args :: (T.Protocol p, T.Transport t) => p t -> LBS.ByteString -> Join_game_args
 decode_Join_game_args iprot bs = to_Join_game_args $ T.deserializeVal iprot (T.T_STRUCT typemap_Join_game_args) bs
 typemap_Join_game_args :: T.TypeMap
-typemap_Join_game_args = Map.fromList [(1,("name",T.T_STRING)),(2,("host",T.T_STRING)),(3,("port",T.T_I32))]
+typemap_Join_game_args = Map.fromList [(1,("name",T.T_STRING)),(2,("host",T.T_STRING))]
 default_Join_game_args :: Join_game_args
 default_Join_game_args = Join_game_args{
   join_game_args_name = "",
-  join_game_args_host = "",
-  join_game_args_port = 0}
+  join_game_args_host = ""}
 data Join_game_result = Join_game_result  { join_game_result_success :: I.Int32
   } deriving (P.Show,P.Eq,G.Generic,TY.Typeable)
 instance H.Hashable Join_game_result where
@@ -150,7 +144,7 @@ instance QC.Arbitrary Join_game_result where
     ]
 from_Join_game_result :: Join_game_result -> T.ThriftVal
 from_Join_game_result record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v20 -> P.Just (0, ("success",T.TI32 _v20))) $ join_game_result_success record
+  [ (\_v19 -> P.Just (0, ("success",T.TI32 _v19))) $ join_game_result_success record
   ]
 write_Join_game_result :: (T.Protocol p, T.Transport t) => p t -> Join_game_result -> P.IO ()
 write_Join_game_result oprot record = T.writeVal oprot $ from_Join_game_result record
@@ -158,7 +152,7 @@ encode_Join_game_result :: (T.Protocol p, T.Transport t) => p t -> Join_game_res
 encode_Join_game_result oprot record = T.serializeVal oprot $ from_Join_game_result record
 to_Join_game_result :: T.ThriftVal -> Join_game_result
 to_Join_game_result (T.TStruct fields) = Join_game_result{
-  join_game_result_success = P.maybe (join_game_result_success default_Join_game_result) (\(_,_val22) -> (case _val22 of {T.TI32 _val23 -> _val23; _ -> P.error "wrong type"})) (Map.lookup (0) fields)
+  join_game_result_success = P.maybe (join_game_result_success default_Join_game_result) (\(_,_val21) -> (case _val21 of {T.TI32 _val22 -> _val22; _ -> P.error "wrong type"})) (Map.lookup (0) fields)
   }
 to_Join_game_result _ = P.error "not a struct"
 read_Join_game_result :: (T.Transport t, T.Protocol p) => p t -> P.IO Join_game_result
@@ -185,8 +179,8 @@ instance QC.Arbitrary Take_action_args where
     ]
 from_Take_action_args :: Take_action_args -> T.ThriftVal
 from_Take_action_args record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v26 -> P.Just (1, ("action",T.TI32 _v26))) $ take_action_args_action record
-  , (\_v26 -> P.Just (2, ("target",T.TString $ E.encodeUtf8 _v26))) $ take_action_args_target record
+  [ (\_v25 -> P.Just (1, ("action",T.TI32 _v25))) $ take_action_args_action record
+  , (\_v25 -> P.Just (2, ("target",T.TString $ E.encodeUtf8 _v25))) $ take_action_args_target record
   ]
 write_Take_action_args :: (T.Protocol p, T.Transport t) => p t -> Take_action_args -> P.IO ()
 write_Take_action_args oprot record = T.writeVal oprot $ from_Take_action_args record
@@ -194,8 +188,8 @@ encode_Take_action_args :: (T.Protocol p, T.Transport t) => p t -> Take_action_a
 encode_Take_action_args oprot record = T.serializeVal oprot $ from_Take_action_args record
 to_Take_action_args :: T.ThriftVal -> Take_action_args
 to_Take_action_args (T.TStruct fields) = Take_action_args{
-  take_action_args_action = P.maybe (take_action_args_action default_Take_action_args) (\(_,_val28) -> (case _val28 of {T.TI32 _val29 -> _val29; _ -> P.error "wrong type"})) (Map.lookup (1) fields),
-  take_action_args_target = P.maybe (take_action_args_target default_Take_action_args) (\(_,_val28) -> (case _val28 of {T.TString _val30 -> E.decodeUtf8 _val30; _ -> P.error "wrong type"})) (Map.lookup (2) fields)
+  take_action_args_action = P.maybe (take_action_args_action default_Take_action_args) (\(_,_val27) -> (case _val27 of {T.TI32 _val28 -> _val28; _ -> P.error "wrong type"})) (Map.lookup (1) fields),
+  take_action_args_target = P.maybe (take_action_args_target default_Take_action_args) (\(_,_val27) -> (case _val27 of {T.TString _val29 -> E.decodeUtf8 _val29; _ -> P.error "wrong type"})) (Map.lookup (2) fields)
   }
 to_Take_action_args _ = P.error "not a struct"
 read_Take_action_args :: (T.Transport t, T.Protocol p) => p t -> P.IO Take_action_args
@@ -220,7 +214,7 @@ instance QC.Arbitrary Take_action_result where
     ]
 from_Take_action_result :: Take_action_result -> T.ThriftVal
 from_Take_action_result record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v33 -> P.Just (0, ("success",T.TBool _v33))) $ take_action_result_success record
+  [ (\_v32 -> P.Just (0, ("success",T.TBool _v32))) $ take_action_result_success record
   ]
 write_Take_action_result :: (T.Protocol p, T.Transport t) => p t -> Take_action_result -> P.IO ()
 write_Take_action_result oprot record = T.writeVal oprot $ from_Take_action_result record
@@ -228,7 +222,7 @@ encode_Take_action_result :: (T.Protocol p, T.Transport t) => p t -> Take_action
 encode_Take_action_result oprot record = T.serializeVal oprot $ from_Take_action_result record
 to_Take_action_result :: T.ThriftVal -> Take_action_result
 to_Take_action_result (T.TStruct fields) = Take_action_result{
-  take_action_result_success = P.maybe (take_action_result_success default_Take_action_result) (\(_,_val35) -> (case _val35 of {T.TBool _val36 -> _val36; _ -> P.error "wrong type"})) (Map.lookup (0) fields)
+  take_action_result_success = P.maybe (take_action_result_success default_Take_action_result) (\(_,_val34) -> (case _val34 of {T.TBool _val35 -> _val35; _ -> P.error "wrong type"})) (Map.lookup (0) fields)
   }
 to_Take_action_result _ = P.error "not a struct"
 read_Take_action_result :: (T.Transport t, T.Protocol p) => p t -> P.IO Take_action_result
@@ -252,7 +246,7 @@ instance QC.Arbitrary Public_message_args where
     ]
 from_Public_message_args :: Public_message_args -> T.ThriftVal
 from_Public_message_args record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v39 -> P.Just (1, ("message",T.TString $ E.encodeUtf8 _v39))) $ public_message_args_message record
+  [ (\_v38 -> P.Just (1, ("message",T.TString $ E.encodeUtf8 _v38))) $ public_message_args_message record
   ]
 write_Public_message_args :: (T.Protocol p, T.Transport t) => p t -> Public_message_args -> P.IO ()
 write_Public_message_args oprot record = T.writeVal oprot $ from_Public_message_args record
@@ -260,7 +254,7 @@ encode_Public_message_args :: (T.Protocol p, T.Transport t) => p t -> Public_mes
 encode_Public_message_args oprot record = T.serializeVal oprot $ from_Public_message_args record
 to_Public_message_args :: T.ThriftVal -> Public_message_args
 to_Public_message_args (T.TStruct fields) = Public_message_args{
-  public_message_args_message = P.maybe (public_message_args_message default_Public_message_args) (\(_,_val41) -> (case _val41 of {T.TString _val42 -> E.decodeUtf8 _val42; _ -> P.error "wrong type"})) (Map.lookup (1) fields)
+  public_message_args_message = P.maybe (public_message_args_message default_Public_message_args) (\(_,_val40) -> (case _val40 of {T.TString _val41 -> E.decodeUtf8 _val41; _ -> P.error "wrong type"})) (Map.lookup (1) fields)
   }
 to_Public_message_args _ = P.error "not a struct"
 read_Public_message_args :: (T.Transport t, T.Protocol p) => p t -> P.IO Public_message_args
@@ -284,7 +278,7 @@ instance QC.Arbitrary Public_message_result where
     ]
 from_Public_message_result :: Public_message_result -> T.ThriftVal
 from_Public_message_result record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v45 -> P.Just (0, ("success",T.TBool _v45))) $ public_message_result_success record
+  [ (\_v44 -> P.Just (0, ("success",T.TBool _v44))) $ public_message_result_success record
   ]
 write_Public_message_result :: (T.Protocol p, T.Transport t) => p t -> Public_message_result -> P.IO ()
 write_Public_message_result oprot record = T.writeVal oprot $ from_Public_message_result record
@@ -292,7 +286,7 @@ encode_Public_message_result :: (T.Protocol p, T.Transport t) => p t -> Public_m
 encode_Public_message_result oprot record = T.serializeVal oprot $ from_Public_message_result record
 to_Public_message_result :: T.ThriftVal -> Public_message_result
 to_Public_message_result (T.TStruct fields) = Public_message_result{
-  public_message_result_success = P.maybe (public_message_result_success default_Public_message_result) (\(_,_val47) -> (case _val47 of {T.TBool _val48 -> _val48; _ -> P.error "wrong type"})) (Map.lookup (0) fields)
+  public_message_result_success = P.maybe (public_message_result_success default_Public_message_result) (\(_,_val46) -> (case _val46 of {T.TBool _val47 -> _val47; _ -> P.error "wrong type"})) (Map.lookup (0) fields)
   }
 to_Public_message_result _ = P.error "not a struct"
 read_Public_message_result :: (T.Transport t, T.Protocol p) => p t -> P.IO Public_message_result
@@ -319,8 +313,8 @@ instance QC.Arbitrary Group_message_args where
     ]
 from_Group_message_args :: Group_message_args -> T.ThriftVal
 from_Group_message_args record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v51 -> P.Just (1, ("group_id",T.TI32 _v51))) $ group_message_args_group_id record
-  , (\_v51 -> P.Just (2, ("message",T.TString $ E.encodeUtf8 _v51))) $ group_message_args_message record
+  [ (\_v50 -> P.Just (1, ("group_id",T.TI32 _v50))) $ group_message_args_group_id record
+  , (\_v50 -> P.Just (2, ("message",T.TString $ E.encodeUtf8 _v50))) $ group_message_args_message record
   ]
 write_Group_message_args :: (T.Protocol p, T.Transport t) => p t -> Group_message_args -> P.IO ()
 write_Group_message_args oprot record = T.writeVal oprot $ from_Group_message_args record
@@ -328,8 +322,8 @@ encode_Group_message_args :: (T.Protocol p, T.Transport t) => p t -> Group_messa
 encode_Group_message_args oprot record = T.serializeVal oprot $ from_Group_message_args record
 to_Group_message_args :: T.ThriftVal -> Group_message_args
 to_Group_message_args (T.TStruct fields) = Group_message_args{
-  group_message_args_group_id = P.maybe (group_message_args_group_id default_Group_message_args) (\(_,_val53) -> (case _val53 of {T.TI32 _val54 -> _val54; _ -> P.error "wrong type"})) (Map.lookup (1) fields),
-  group_message_args_message = P.maybe (group_message_args_message default_Group_message_args) (\(_,_val53) -> (case _val53 of {T.TString _val55 -> E.decodeUtf8 _val55; _ -> P.error "wrong type"})) (Map.lookup (2) fields)
+  group_message_args_group_id = P.maybe (group_message_args_group_id default_Group_message_args) (\(_,_val52) -> (case _val52 of {T.TI32 _val53 -> _val53; _ -> P.error "wrong type"})) (Map.lookup (1) fields),
+  group_message_args_message = P.maybe (group_message_args_message default_Group_message_args) (\(_,_val52) -> (case _val52 of {T.TString _val54 -> E.decodeUtf8 _val54; _ -> P.error "wrong type"})) (Map.lookup (2) fields)
   }
 to_Group_message_args _ = P.error "not a struct"
 read_Group_message_args :: (T.Transport t, T.Protocol p) => p t -> P.IO Group_message_args
@@ -354,7 +348,7 @@ instance QC.Arbitrary Group_message_result where
     ]
 from_Group_message_result :: Group_message_result -> T.ThriftVal
 from_Group_message_result record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v58 -> P.Just (0, ("success",T.TBool _v58))) $ group_message_result_success record
+  [ (\_v57 -> P.Just (0, ("success",T.TBool _v57))) $ group_message_result_success record
   ]
 write_Group_message_result :: (T.Protocol p, T.Transport t) => p t -> Group_message_result -> P.IO ()
 write_Group_message_result oprot record = T.writeVal oprot $ from_Group_message_result record
@@ -362,7 +356,7 @@ encode_Group_message_result :: (T.Protocol p, T.Transport t) => p t -> Group_mes
 encode_Group_message_result oprot record = T.serializeVal oprot $ from_Group_message_result record
 to_Group_message_result :: T.ThriftVal -> Group_message_result
 to_Group_message_result (T.TStruct fields) = Group_message_result{
-  group_message_result_success = P.maybe (group_message_result_success default_Group_message_result) (\(_,_val60) -> (case _val60 of {T.TBool _val61 -> _val61; _ -> P.error "wrong type"})) (Map.lookup (0) fields)
+  group_message_result_success = P.maybe (group_message_result_success default_Group_message_result) (\(_,_val59) -> (case _val59 of {T.TBool _val60 -> _val60; _ -> P.error "wrong type"})) (Map.lookup (0) fields)
   }
 to_Group_message_result _ = P.error "not a struct"
 read_Group_message_result :: (T.Transport t, T.Protocol p) => p t -> P.IO Group_message_result
@@ -389,8 +383,8 @@ instance QC.Arbitrary Private_message_args where
     ]
 from_Private_message_args :: Private_message_args -> T.ThriftVal
 from_Private_message_args record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v64 -> P.Just (1, ("player_name",T.TString $ E.encodeUtf8 _v64))) $ private_message_args_player_name record
-  , (\_v64 -> P.Just (2, ("message",T.TString $ E.encodeUtf8 _v64))) $ private_message_args_message record
+  [ (\_v63 -> P.Just (1, ("player_name",T.TString $ E.encodeUtf8 _v63))) $ private_message_args_player_name record
+  , (\_v63 -> P.Just (2, ("message",T.TString $ E.encodeUtf8 _v63))) $ private_message_args_message record
   ]
 write_Private_message_args :: (T.Protocol p, T.Transport t) => p t -> Private_message_args -> P.IO ()
 write_Private_message_args oprot record = T.writeVal oprot $ from_Private_message_args record
@@ -398,8 +392,8 @@ encode_Private_message_args :: (T.Protocol p, T.Transport t) => p t -> Private_m
 encode_Private_message_args oprot record = T.serializeVal oprot $ from_Private_message_args record
 to_Private_message_args :: T.ThriftVal -> Private_message_args
 to_Private_message_args (T.TStruct fields) = Private_message_args{
-  private_message_args_player_name = P.maybe (private_message_args_player_name default_Private_message_args) (\(_,_val66) -> (case _val66 of {T.TString _val67 -> E.decodeUtf8 _val67; _ -> P.error "wrong type"})) (Map.lookup (1) fields),
-  private_message_args_message = P.maybe (private_message_args_message default_Private_message_args) (\(_,_val66) -> (case _val66 of {T.TString _val68 -> E.decodeUtf8 _val68; _ -> P.error "wrong type"})) (Map.lookup (2) fields)
+  private_message_args_player_name = P.maybe (private_message_args_player_name default_Private_message_args) (\(_,_val65) -> (case _val65 of {T.TString _val66 -> E.decodeUtf8 _val66; _ -> P.error "wrong type"})) (Map.lookup (1) fields),
+  private_message_args_message = P.maybe (private_message_args_message default_Private_message_args) (\(_,_val65) -> (case _val65 of {T.TString _val67 -> E.decodeUtf8 _val67; _ -> P.error "wrong type"})) (Map.lookup (2) fields)
   }
 to_Private_message_args _ = P.error "not a struct"
 read_Private_message_args :: (T.Transport t, T.Protocol p) => p t -> P.IO Private_message_args
@@ -424,7 +418,7 @@ instance QC.Arbitrary Private_message_result where
     ]
 from_Private_message_result :: Private_message_result -> T.ThriftVal
 from_Private_message_result record = T.TStruct $ Map.fromList $ M.catMaybes
-  [ (\_v71 -> P.Just (0, ("success",T.TBool _v71))) $ private_message_result_success record
+  [ (\_v70 -> P.Just (0, ("success",T.TBool _v70))) $ private_message_result_success record
   ]
 write_Private_message_result :: (T.Protocol p, T.Transport t) => p t -> Private_message_result -> P.IO ()
 write_Private_message_result oprot record = T.writeVal oprot $ from_Private_message_result record
@@ -432,7 +426,7 @@ encode_Private_message_result :: (T.Protocol p, T.Transport t) => p t -> Private
 encode_Private_message_result oprot record = T.serializeVal oprot $ from_Private_message_result record
 to_Private_message_result :: T.ThriftVal -> Private_message_result
 to_Private_message_result (T.TStruct fields) = Private_message_result{
-  private_message_result_success = P.maybe (private_message_result_success default_Private_message_result) (\(_,_val73) -> (case _val73 of {T.TBool _val74 -> _val74; _ -> P.error "wrong type"})) (Map.lookup (0) fields)
+  private_message_result_success = P.maybe (private_message_result_success default_Private_message_result) (\(_,_val72) -> (case _val72 of {T.TBool _val73 -> _val73; _ -> P.error "wrong type"})) (Map.lookup (0) fields)
   }
 to_Private_message_result _ = P.error "not a struct"
 read_Private_message_result :: (T.Transport t, T.Protocol p) => p t -> P.IO Private_message_result
@@ -463,7 +457,7 @@ process_join_game (seqid, iprot, oprot, handler) = do
   args <- read_Join_game_args iprot
   (X.catch
     (do
-      val <- Iface.join_game handler (join_game_args_name args) (join_game_args_host args) (join_game_args_port args)
+      val <- Iface.join_game handler (join_game_args_name args) (join_game_args_host args)
       let res = default_Join_game_result{join_game_result_success = val}
       T.writeMessageBegin oprot ("join_game", T.M_REPLY, seqid)
       write_Join_game_result oprot res

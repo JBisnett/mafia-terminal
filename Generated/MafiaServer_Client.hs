@@ -58,14 +58,14 @@ recv_ping ip = do
   res <- read_Ping_result ip
   T.readMessageEnd ip
   P.return ()
-join_game (ip,op) arg_name arg_host arg_port = do
-  send_join_game op arg_name arg_host arg_port
+join_game (ip,op) arg_name arg_host = do
+  send_join_game op arg_name arg_host
   recv_join_game ip
-send_join_game op arg_name arg_host arg_port = do
+send_join_game op arg_name arg_host = do
   seq <- seqid
   seqn <- R.readIORef seq
   T.writeMessageBegin op ("join_game", T.M_CALL, seqn)
-  write_Join_game_args op (Join_game_args{join_game_args_name=arg_name,join_game_args_host=arg_host,join_game_args_port=arg_port})
+  write_Join_game_args op (Join_game_args{join_game_args_name=arg_name,join_game_args_host=arg_host})
   T.writeMessageEnd op
   T.tFlush (T.getTransport op)
 recv_join_game ip = do

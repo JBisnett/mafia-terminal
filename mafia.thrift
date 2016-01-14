@@ -1,10 +1,12 @@
 namespace rb RocHack.Mafia
 
+const i32 port_number = 9090
+
 service MafiaServer {
   void ping();
 
   // add player to game, return player ID
-  i32 join_game(1:string name, 2:string host, 3:i32 port);
+  i32 join_game(1:string name, 2:string host);
 
   // take action on a target
   bool take_action(1:i32 action, 2:string target);

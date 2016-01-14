@@ -26,6 +26,7 @@ import           Thrift.Protocol.Binary
 import           Thrift.Server
 import           Thrift.Transport.Handle
 
+import           Mafia_Consts
 import qualified MafiaPlayer               as MP
 import           MafiaPlayer_Client
 import           MafiaPlayer_Iface
@@ -44,6 +45,9 @@ alive  :: P.Bool,
 role   :: P.String
 }
 
+instance P.Show Player where
+  show x = " ID: " ++ P.show (number x) ++ " Name: " ++ P.show (name x)
+
 type MutablePlayerMap = MVar (Map.HashMap Int Player)
 
 data ServerHandler = ServerHandler {
@@ -52,12 +56,12 @@ players :: MutablePlayerMap
 
 getPlayers ServerHandler {players = p} = p :: MutablePlayerMap
 
-addToMap :: MutablePlayerMap -> Int -> Player -> P.IO()
+addToMap :: MutablePlayerMap -> Int -> Player -> P.IO(Map.HashMap Int Player)
 addToMap mvarMap number player = do
   m <- takeMVar mvarMap
   let newMap = Map.insert number player m
   putMVar mvarMap newMap
-  return ()
+  return newMap
 
 newSH = do
   m <- newMVar Map.empty
@@ -71,23 +75,23 @@ newPlayer num n p = Player {number = num, name = n, handle = p, alive = P.True, 
 instance MafiaServer_Iface ServerHandler where
   ping _ = P.print "Ping"
 
-  join_game s n h p = do
+  join_game s n h= do
     let host = LT.unpack h
-    transport <- hOpen (host, PortNumber 9090)
+    let port = PortNumber 9090
+    transport <- hOpen (host, port)
     let binProto = BinaryProtocol transport
     let handle = (binProto, binProto)
     let name = LT.unpack n
 
-    number <- getStdRandom (randomR (0, 2 P.^32))
+    number <- getStdRandom (randomR (0, 2 P.^16))
     let num32 = P.fromIntegral number :: I.Int32
     let player = newPlayer num32 name handle
     let players = getPlayers s
-    addToMap players number player
+    current_map <- addToMap players number player
 
 
     P.putStr name
     P.putStrLn " joined the game"
-
 
     return num32
 
@@ -104,6 +108,7 @@ instance MafiaServer_Iface ServerHandler where
     P.print message
     return P.True
 
+start_game =
 
 main = do
   handler <- newSH

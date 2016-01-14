@@ -42,7 +42,7 @@ import Mafia_Types
 
 class MafiaServer_Iface a where
   ping :: a -> P.IO ()
-  join_game :: a -> LT.Text -> LT.Text -> I.Int32 -> P.IO I.Int32
+  join_game :: a -> LT.Text -> LT.Text -> P.IO I.Int32
   take_action :: a -> I.Int32 -> LT.Text -> P.IO P.Bool
   public_message :: a -> LT.Text -> P.IO P.Bool
   group_message :: a -> I.Int32 -> LT.Text -> P.IO P.Bool

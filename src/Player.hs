@@ -43,3 +43,7 @@ main = do
   let client = (binProto, binProto)
 
   MPC.ping client
+  id <- MSC.join_game client (LT.pack "Bob") (LT.pack "localhost")
+  id <- MSC.join_game client (LT.pack "Bill") (LT.pack "localhost")
+  id <- MSC.join_game client (LT.pack "Bryan") (LT.pack "localhost")
+  return ()
